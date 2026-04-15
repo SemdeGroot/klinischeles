@@ -38,6 +38,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .dots{display:flex;gap:4px;align-items:center}
 .d{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:.3s;flex-shrink:0}
 .d.on{width:22px;border-radius:4px;background:var(--blue);border-color:var(--blue)}
+@media(max-width:600px){
+  #bar{gap:8px;padding:0 10px}
+  #lbl{min-width:0;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+  .d{width:6px;height:6px}
+  .d.on{width:16px}
+  #bar button{width:32px;height:32px;font-size:1rem}
+}
 
 /* FRAMES */
 .f{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:.06;transition:opacity .7s}

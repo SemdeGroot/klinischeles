@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Klinische Les – Biologicals & Targeted Therapy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f2e;--bg2:#212738;--bg3:#283042;
+  --card:#242a3a;--border:#353d52;
+  --text:#cdd3de;--dim:#9ca3b4;--bright:#e8ecf4;
+  --blue:#6dacfc;--teal:#3ecfba;--rose:#f472a0;--amber:#f0b94d;
+  --purple:#a78bfa;--green:#5cd880;--cyan:#40c9e0;--orange:#f59e54;
+  --pink:#ee6cb0;--lime:#9ed85c;--red:#f07070;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text)}
+
+#viewport{position:absolute;top:0;left:0;right:0;bottom:56px;overflow:hidden;background:var(--bg)}
+#world{position:absolute;width:12000px;height:8000px;transform-origin:0 0;will-change:transform}
+
+/* NAV */
+#bar{
+  position:absolute;bottom:0;left:0;right:0;height:56px;
+  background:var(--bg2);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  z-index:500;padding:0 20px;
+}
+#bar button{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--border);
+  background:var(--bg3);color:var(--bright);font-size:1.15rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;
+}
+#bar button:hover{background:#3a4260}
+#bar button:disabled{opacity:.2;cursor:default}
+#lbl{font-size:.8rem;color:var(--dim);white-space:nowrap;min-width:200px;text-align:center;font-weight:500}
+.dots{display:flex;gap:4px;align-items:center}
+.d{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:.3s;flex-shrink:0}
+.d.on{width:22px;border-radius:4px;background:var(--blue);border-color:var(--blue)}
+
+/* FRAMES */
+.f{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:.06;transition:opacity .7s}
+.f.act{opacity:1}
+.f[id^="d-"]{background:var(--bg);border-radius:18px;padding:20px}
+
+h1{font-family:'Fraunces',serif;font-weight:700;font-size:2.6rem;line-height:1.15;color:var(--bright)}
+h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.85rem;color:var(--bright);margin-bottom:.2rem}
+h3{font-family:'Fraunces',serif;font-weight:500;font-size:1.05rem;color:var(--bright);margin-bottom:.15rem}
+.sub{font-size:1rem;color:var(--dim);max-width:440px;line-height:1.6;margin-top:8px}
+.tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;max-width:520px;text-align:left}
+.f .card{box-shadow:0 4px 24px rgba(40, 18, 18, 0.3)}
+.card p{color:var(--text);font-size:.88rem;line-height:1.6;margin-bottom:.3rem}
+.card p:last-child{margin-bottom:0}
+.card strong{color:var(--bright);font-weight:600}
+.arr{display:flex;align-items:center;gap:7px;margin:6px 0;font-size:.86rem;flex-wrap:wrap}
+.arr .a{color:var(--teal);font-weight:700}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.pill{padding:2px 9px;border-radius:7px;font-size:.72rem;font-weight:500;background:var(--bg2);border:1px solid var(--border);color:var(--text)}
+.sep{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+
+.intro-icon{
+  width:80px;height:80px;border-radius:20px;margin-bottom:18px;
+  background:linear-gradient(135deg,#2a3a5c,#3a2a5c);
+  display:flex;align-items:center;justify-content:center;font-size:2.4rem;
+  border:1px solid var(--border);
+}
+
+.duo{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.duo .card{flex:1;min-width:220px}
+
+.stbl{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:6px}
+.stbl th{text-align:left;padding:6px 8px;color:var(--bright);border-bottom:2px solid var(--border);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em}
+.stbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text);vertical-align:top}
+.stbl tr:last-child td{border-bottom:none}
+
+.slide-img{border-radius:10px;border:1px solid var(--border);background:#fff;display:block;max-width:100%;object-fit:contain}
+.slide-img.dark{background:var(--bg3)}
+.img-row{display:flex;gap:14px;align-items:stretch;margin-top:10px}
+.img-row .card{flex:1}
+.img-col-thumb{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.img-caption{font-size:.72rem;color:var(--dim);margin-top:6px;text-align:center;font-style:italic;line-height:1.35;max-width:100%}
+.crop-left-half{width:100%;max-width:380px;aspect-ratio:473/419;overflow:hidden;border-radius:10px;border:1px solid var(--border);background:#fff;margin:0 auto}
+.crop-left-half img{width:200%;height:100%;object-fit:cover;object-position:left center;display:block}
+/* HER2/EGFR crop: minder afgesneden — toont ~62 % van origineel (EGFR + HER2/HER3 + begin HER3) */
+.crop-her2{width:100%;aspect-ratio:586/419;overflow:hidden;border-radius:10px;border:1px solid var(--border);background:#fff}
+.crop-her2 img{width:161%;height:100%;object-fit:cover;object-position:left center;display:block}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+<div id="world">
+
+<div class="f" id="s-intro" style="left:400px;top:400px;width:600px;height:360px">
+  <div class="intro-icon">💊</div>
+  <h1>Biologicals &amp;<br>Targeted Therapy</h1>
+  <p class="sub">Klinische les door Sem en Sara<br></p>
+</div>
+
+<div class="f" id="s-ra" style="left:1300px;top:350px;width:820px;height:430px">
+  <span class="tag" style="background:#1e3a5f;color:var(--blue);border:1px solid #2e5a8f">Introductie</span>
+  <h2>Reumatoïde Artritis</h2>
+  <div class="img-row" style="max-width:780px">
+    <div class="card">
+      <p><strong>Auto-immuunziekte:</strong> het immuunsysteem valt de eigen gewrichten aan.</p>
+      <p>Ontstekingsfactoren (cytokines zoals TNF-alfa en interleukines) komen vrij -> <strong>chronische ontsteking</strong>.</p>
+      <p class="sep">Behandeling start met conventionele middelen (bijv. methotrexaat). Bij onvoldoende effect -> <strong>biologicals</strong> of <strong>targeted therapie</strong>.</p>
+    </div>
+    <div class="img-col-thumb" style="width:260px">
+      <img class="slide-img dark" src="assets/Reuma.jpg" alt="Röntgenfoto handen met reumatoïde artritis" style="width:100%">
+      <div class="img-caption">Röntgenfoto van handen met ontstoken gewrichten (rood) bij reumatoïde artritis</div>
+    </div>
+  </div>
+</div>
+
+<div class="f" id="s-onco" style="left:2200px;top:300px;width:820px;height:440px">
+  <span class="tag" style="background:#1a3d2a;color:var(--green);border:1px solid #2a6d3a">Introductie</span>
+  <h2>Oncologie: vroeger vs. nu</h2>
+  <div class="img-row" style="max-width:780px">
+    <div class="card">
+      <p><strong>Vroeger:</strong> behandeling doodde alle snel delende cellen - tumorcellen én gezonde cellen (haaruitval, misselijkheid, infectiegevaar).</p>
+      <p class="sep"><strong>Nu:</strong> we kennen specifieke eigenschappen van tumorcellen. Ze delen ongecontroleerd, negeren stop-signalen, vormen nieuwe bloedvaten en kunnen uitzaaien.</p>
+      <p class="sep">Moderne middelen grijpen <strong>gericht</strong> aan op deze eigenschappen - effectiever, met minder bijwerkingen.</p>
+    </div>
+    <div class="img-col-thumb" style="width:330px">
+      <img class="slide-img" src="assets/hallmarks-cancer.png" alt="Hallmarks of Cancer - kenmerkende eigenschappen van tumorcellen" style="width:100%;background:#fff">
+      <div class="img-caption"><em>Hallmarks of Cancer</em>: eigenschappen die tumorcellen onderscheiden van gezonde cellen</div>
+    </div>
+  </div>
+</div>
+
+<div class="f" id="s-types" style="left:3100px;top:350px;width:820px;height:430px">
+  <span class="tag" style="background:#2a2050;color:var(--purple);border:1px solid #4a3a80">Introductie</span>
+  <h2>Twee soorten gerichte middelen</h2>
+  <div class="duo" style="align-items:stretch">
+    <div class="img-col-thumb" style="width:130px">
+      <img class="slide-img" src="assets/Antilichaam.png" alt="Y-vormig antilichaam" style="width:100%;padding:6px">
+      <div class="img-caption" style="color:var(--purple)">Y-vorm antilichaam</div>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--purple)">Antilichamen (-mab)</h3>
+      <p><strong>Groot Y-vormig eiwit.</strong> Bindt specifiek aan een target op of buiten de cel.</p>
+      <p>Afgebroken door de maag -> <strong>injectie of infuus</strong>.</p>
+      <p style="margin-top:4px;font-size:.8rem;color:var(--purple)">adalimumab (Humira), trastuzumab (Herzuma), rituximab (Truxima)...</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--amber)">Kinaseremmers (-nib)</h3>
+      <p><strong>Klein molecuul.</strong> Gaat de cel in en blokkeert een kinase (enzym voor signaaloverdracht).</p>
+      <p>Klein genoeg voor een <strong>tablet</strong>.</p>
+      <p style="margin-top:4px;font-size:.8rem;color:var(--amber)">imatinib, baricitinib (Olumiant), osimertinib (Tagrisso)...</p>
+    </div>
+  </div>
+</div>
+
+<div id="cell-frame" style="position:absolute;left:4200px;top:1800px;width:1300px;height:1030px;">
+<svg viewBox="0 0 960 760" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">
+
+  <rect width="960" height="760" rx="18" fill="var(--bg2)" stroke="var(--border)" stroke-width="1.5"/>
+
+  <text x="480" y="42" text-anchor="middle" fill="var(--bright)" font-family="Fraunces,serif" font-size="28" font-weight="600">Waar grijpen deze geneesmiddelen aan?</text>
+  <text x="480" y="68" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="15" font-style="italic">Overzicht van cellen, signaalstoffen en targets</text>
+
+  <!-- CYTOKINES -->
+  <rect x="270" y="88" width="420" height="78" rx="12" fill="#1a2e30" stroke="var(--teal)" stroke-width="1.4"/>
+  <text x="480" y="117" text-anchor="middle" fill="var(--teal)" font-family="Fraunces,serif" font-size="19" font-weight="600">Signaalstoffen (cytokines)</text>
+  <text x="480" y="137" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="13">Boodschappers die ontsteking aansturen</text>
+
+  <rect x="300" y="145" width="82" height="28" rx="7" fill="#1a2545" stroke="var(--blue)" stroke-width="1.2"/>
+  <text x="341" y="164" text-anchor="middle" fill="var(--blue)" font-family="DM Sans,sans-serif" font-size="13" font-weight="600">TNF-α</text>
+
+  <rect x="395" y="145" width="118" height="28" rx="7" fill="#1a2e30" stroke="var(--teal)" stroke-width="1.2"/>
+  <text x="454" y="164" text-anchor="middle" fill="var(--teal)" font-family="DM Sans,sans-serif" font-size="13" font-weight="600">Interleukines</text>
+  <text x="528" y="160" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="11">(IL-1, IL-6, IL-17...)</text>
+
+  <!-- T-CEL -->
+  <ellipse cx="215" cy="355" rx="145" ry="120" fill="#151e35" stroke="var(--blue)" stroke-width="2"/>
+  <text x="215" y="288" text-anchor="middle" fill="var(--blue)" font-family="Fraunces,serif" font-size="23" font-weight="600">T-cel</text>
+  <text x="215" y="313" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="13">Witte bloedcel (immuuncel)</text>
+  <text x="215" y="332" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="12">Stuurt immuunrespons aan</text>
+
+  <!-- JAK -->
+  <rect x="145" y="346" width="140" height="42" rx="9" fill="#2a2210" stroke="var(--amber)" stroke-width="1.4"/>
+  <text x="215" y="372" text-anchor="middle" fill="var(--amber)" font-family="DM Sans,sans-serif" font-size="13" font-weight="600">JAK-pathway</text>
+
+  <!-- gelijkmatig langs de rand -->
+  <rect x="304" y="248" width="70" height="24" rx="6" fill="#201a35" stroke="var(--purple)" stroke-width="1.2"/>
+  <text x="339" y="265" text-anchor="middle" fill="var(--purple)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">CD80/86</text>
+
+  <rect x="342" y="332" width="58" height="26" rx="6" fill="#201a35" stroke="var(--purple)" stroke-width="1.2"/>
+  <text x="371" y="350" text-anchor="middle" fill="var(--purple)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">CD28</text>
+
+  <rect x="320" y="424" width="54" height="26" rx="6" fill="#201a35" stroke="var(--purple)" stroke-width="1.2"/>
+  <text x="347" y="442" text-anchor="middle" fill="var(--purple)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">PD-1</text>
+
+  <!-- B-CEL -->
+  <ellipse cx="770" cy="300" rx="130" ry="105" fill="#251520" stroke="var(--rose)" stroke-width="2"/>
+  <text x="770" y="240" text-anchor="middle" fill="var(--rose)" font-family="Fraunces,serif" font-size="23" font-weight="600">B-cel</text>
+  <text x="770" y="263" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="13">Witte bloedcel (immuuncel)</text>
+  <text x="770" y="281" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="12">Maakt antilichamen</text>
+
+  <rect x="655" y="298" width="56" height="26" rx="6" fill="#2a1520" stroke="var(--rose)" stroke-width="1.2"/>
+  <text x="683" y="316" text-anchor="middle" fill="var(--rose)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">CD20</text>
+
+  <rect x="812" y="328" width="56" height="26" rx="6" fill="#2a1528" stroke="var(--pink)" stroke-width="1.2"/>
+  <text x="840" y="346" text-anchor="middle" fill="var(--pink)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">CD38</text>
+
+  <rect x="735" y="304" width="70" height="32" rx="7" fill="#2a1e10" stroke="var(--orange)" stroke-width="1.2"/>
+  <text x="770" y="325" text-anchor="middle" fill="var(--orange)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">BTK</text>
+
+  <!-- TUMORCEL -->
+  <ellipse cx="600" cy="525" rx="170" ry="128" fill="#102018" stroke="var(--green)" stroke-width="2"/>
+  <text x="600" y="442" text-anchor="middle" fill="var(--green)" font-family="Fraunces,serif" font-size="23" font-weight="600">Tumorcel</text>
+  <text x="600" y="465" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="13">Ongecontroleerde groei &amp; deling</text>
+
+  <rect x="455" y="490" width="56" height="26" rx="6" fill="#102018" stroke="var(--green)" stroke-width="1.2"/>
+  <text x="483" y="508" text-anchor="middle" fill="var(--green)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">HER2</text>
+
+  <rect x="455" y="530" width="56" height="26" rx="6" fill="#0a2028" stroke="var(--cyan)" stroke-width="1.2"/>
+  <text x="483" y="548" text-anchor="middle" fill="var(--cyan)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">EGFR</text>
+
+  <rect x="455" y="570" width="62" height="26" rx="6" fill="#201a35" stroke="var(--purple)" stroke-width="1.2"/>
+  <text x="486" y="588" text-anchor="middle" fill="var(--purple)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">PD-L1</text>
+
+  <rect x="540" y="488" width="120" height="32" rx="7" fill="#2a1e10" stroke="var(--orange)" stroke-width="1.2"/>
+  <text x="600" y="509" text-anchor="middle" fill="var(--orange)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Kinasen</text>
+
+  <rect x="540" y="532" width="120" height="32" rx="7" fill="#1a2510" stroke="var(--lime)" stroke-width="1.2"/>
+  <text x="600" y="553" text-anchor="middle" fill="var(--lime)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">DNA / PARP</text>
+
+  <rect x="540" y="576" width="120" height="32" rx="7" fill="#2a1515" stroke="var(--red)" stroke-width="1.2"/>
+  <text x="600" y="597" text-anchor="middle" fill="var(--red)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">Proteasoom</text>
+
+  <rect x="745" y="500" width="76" height="32" rx="7" fill="#102018" stroke="var(--green)" stroke-width="1.2"/>
+  <text x="783" y="521" text-anchor="middle" fill="var(--green)" font-family="DM Sans,sans-serif" font-size="12" font-weight="600">VEGF</text>
+  <line x1="745" y1="516" x2="725" y2="522" stroke="var(--green)" stroke-width="1" stroke-dasharray="4 3" opacity=".35"/>
+
+  <!-- PD-1 ↔ PD-L1 -->
+  <line x1="374" y1="437" x2="455" y2="583" stroke="var(--purple)" stroke-width="1.3" stroke-dasharray="5 4" opacity=".25"/>
+
+  <!-- Legend -->
+  <rect x="30" y="694" width="900" height="50" rx="8" fill="var(--bg3)" stroke="var(--border)" stroke-width="1"/>
+
+  <circle cx="55" cy="720" r="5" fill="var(--blue)"/>
+  <text x="68" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">TNF-α</text>
+
+  <circle cx="130" cy="720" r="5" fill="var(--teal)"/>
+  <text x="143" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">IL</text>
+
+  <circle cx="175" cy="720" r="5" fill="var(--amber)"/>
+  <text x="188" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">Kinasen (-nib)</text>
+
+  <circle cx="320" cy="720" r="5" fill="var(--purple)"/>
+  <text x="333" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">Checkpoint</text>
+
+  <circle cx="425" cy="720" r="5" fill="var(--rose)"/>
+  <text x="438" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">B-cel</text>
+
+  <circle cx="500" cy="720" r="5" fill="var(--green)"/>
+  <text x="513" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">Tumor</text>
+
+  <circle cx="575" cy="720" r="5" fill="var(--lime)"/>
+  <text x="588" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">DNA</text>
+
+  <circle cx="635" cy="720" r="5" fill="var(--red)"/>
+  <text x="648" y="725" fill="var(--dim)" font-family="DM Sans,sans-serif" font-size="11.5">Proteasoom</text>
+</svg>
+</div>
+
+<div class="f" id="d-cyto" style="left:3480px;top:1820px;width:600px;height:570px">
+  <span class="tag" style="background:#1a2e30;color:var(--teal);border:1px solid #2a5e50">Signaalstoffen remmen</span>
+  <h2 style="color:var(--teal)">TNF-α &amp; Interleukine-remmers</h2>
+  <div style="margin-top:10px;width:100%;max-width:540px">
+    <svg viewBox="0 0 540 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:var(--bg3);border-radius:10px;border:1px solid var(--border);padding:6px">
+      <!-- Cel A (zendcel, blauw) -->
+      <circle cx="70" cy="65" r="42" fill="#1a2545" stroke="var(--blue)" stroke-width="2"/>
+      <circle cx="70" cy="65" r="14" fill="#0f1830" stroke="var(--blue)" stroke-width="1" opacity=".7"/>
+      <text x="70" y="120" text-anchor="middle" fill="var(--blue)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">macrofaag</text>
+
+      <!-- Cytokines: bewegen van macrofaag (cel A) naar gewrichtscel (cel B) -->
+      <circle cy="50" r="6" fill="var(--blue)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="0s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="0s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="68" r="6" fill="var(--teal)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="0.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="58" r="6" fill="var(--teal)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="1.6s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="1.6s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="74" r="6" fill="var(--blue)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="2.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="2.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="55" r="6" fill="var(--teal)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="3.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="3.2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="70" r="6" fill="var(--blue)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="4.0s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="4.0s" repeatCount="indefinite"/>
+      </circle>
+      <circle cy="62" r="6" fill="var(--teal)">
+        <animate attributeName="cx" from="115" to="420" dur="5.5s" begin="4.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="5.5s" begin="4.8s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Labels -->
+      <text x="155" y="28" text-anchor="middle" fill="var(--blue)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">TNF-α</text>
+      <text x="290" y="28" text-anchor="middle" fill="var(--teal)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">IL-1 / IL-6 / IL-17</text>
+
+      <!-- Pijl naar cel B -->
+      <line x1="120" y1="68" x2="408" y2="72" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".55"/>
+      <polygon points="408,65 420,72 408,79" fill="var(--teal)" opacity=".75"/>
+
+      <!-- Pijl omhoog + label "ontsteking" boven cel B -->
+      <text x="455" y="14" text-anchor="middle" fill="var(--red)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">ontsteking</text>
+      <line x1="455" y1="22" x2="455" y2="38" stroke="var(--red)" stroke-width="2"/>
+      <polygon points="450,26 455,18 460,26" fill="var(--red)"/>
+
+      <!-- Cel B (doelcel, ontstoken - rood/oranje) -->
+      <circle cx="455" cy="72" r="32" fill="#3a1818" stroke="var(--red)" stroke-width="2"/>
+      <circle cx="455" cy="72" r="32" fill="none" stroke="var(--red)" stroke-width="1" stroke-dasharray="3 3" opacity=".4">
+        <animate attributeName="r" values="32;38;32" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".5;.1;.5" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="455" cy="72" r="11" fill="#1f0a0a" stroke="var(--red)" stroke-width="1" opacity=".7"/>
+      <text x="455" y="120" text-anchor="middle" fill="var(--red)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">gewrichtscel</text>
+    </svg>
+    <div class="img-caption">Immuuncel stuurt <strong style="color:var(--blue)">TNF-α</strong> en <strong style="color:var(--teal)">interleukines</strong> uit -&gt; ontsteking in doelweefsel</div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <p>Cytokines zijn <strong>boodschappers</strong> die ontsteking aansturen. Bij reuma zijn ze overactief.</p>
+    <div class="arr"><span>Cytokine geblokkeerd</span><span class="a">-></span><span>minder ontsteking</span><span class="a">-></span><span><strong>minder klachten</strong></span></div>
+    <p class="sep"><strong>TNF-α remmers</strong> - bij reuma, ziekte van Crohn, colitis ulcerosa:</p>
+    <div class="pills">
+      <span class="pill">adalimumab (Humira)</span><span class="pill">etanercept (Enbrel)</span>
+      <span class="pill">infliximab (Remicade)</span><span class="pill">golimumab (Simponi)</span>
+      <span class="pill">certolizumab pegol (Cimzia)</span>
+    </div>
+    <p style="margin-top:8px"><strong>Interleukine-remmers</strong> - bij reuma, psoriasis, ziekte van Crohn:</p>
+    <div class="pills">
+      <span class="pill">tocilizumab (RoActemra)</span><span class="pill">anakinra (Kineret)</span>
+      <span class="pill">secukinumab (Cosentyx)</span><span class="pill">ustekinumab (Pyzchiva)</span>
+      <span class="pill">ixekizumab (Taltz)</span><span class="pill">risankizumab (Skyrizi)</span>
+      <span class="pill">brodalumab (Kyntheum)</span><span class="pill">bimekizumab (Bimzelx)</span>
+    </div>
+  </div>
+</div>
+
+<div class="f" id="d-tcel" style="left:3480px;top:2400px;width:600px;height:620px">
+  <span class="tag" style="background:#2a2210;color:var(--amber);border:1px solid #5a4a20">T-cel van binnenuit remmen</span>
+  <h2 style="color:var(--amber)">JAK-remmers &amp; T-cel modulatie</h2>
+  <div style="margin-top:10px;width:100%;max-width:560px">
+    <img class="slide-img dark" src="assets/JAK-remmers.jpg" alt="Janus, Romeinse god met twee gezichten" style="width:100%;height:170px;object-fit:cover;object-position:center">
+    <div class="img-caption"><strong style="color:var(--amber)">Janus</strong>: Romeinse god met 2 gezichten. Het <strong>JAK-enzym</strong> heeft ook 2 domeinen, vandaar de naam <strong>Janus Kinase</strong>.</div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <p>Sommige middelen werken <strong>binnenin de T-cel</strong> (witte bloedcel). Ze blokkeren enzymen die ontstekingssignalen doorgeven.</p>
+    <div class="arr"><span>JAK geblokkeerd</span><span class="a">-></span><span>signaal stopt</span><span class="a">-></span><span><strong>minder ontsteking</strong></span></div>
+    <p class="sep"><strong>JAK-remmers</strong> (-nib = tablet) - bij reuma, myelofibrose, psoriasis:</p>
+    <div class="pills">
+      <span class="pill">baricitinib (Olumiant)</span><span class="pill">tofacitinib (Xeljanz)</span>
+      <span class="pill">upadacitinib (Rinvoq)</span><span class="pill">fedratinib (Inrebic)</span>
+      <span class="pill">ruxolitinib (Jakavi)</span>
+    </div>
+    <p style="margin-top:8px"><strong>Abatacept</strong> (Orencia) - blokkeert activatiesignaal (CD80/86) naar T-cel (bij reuma en andere auto-immuunziekten).</p>
+    <p><strong>Apremilast</strong> (Otezla) - remt PDE4, minder ontsteking bij psoriasis.</p>
+  </div>
+</div>
+
+<div class="f" id="d-bcel" style="left:5620px;top:1820px;width:840px;height:520px">
+  <span class="tag" style="background:#251520;color:var(--rose);border:1px solid #5a2540">B-cel targets</span>
+  <h2 style="color:var(--rose)">B-cel uitschakelen</h2>
+  <div class="img-row" style="max-width:800px">
+   <div class="img-col-thumb" style="width:230px">
+    <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <!-- B-cel hoofdcirkel -->
+      <circle cx="120" cy="120" r="74" fill="#3a1d2c" stroke="var(--rose)" stroke-width="2.4"/>
+
+      <!-- BTK enzym binnenin -->
+      <ellipse cx="120" cy="158" rx="26" ry="13" fill="#2a1e10" stroke="var(--orange)" stroke-width="1.4"/>
+      <text x="120" y="162" text-anchor="middle" fill="var(--orange)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">BTK</text>
+
+      <!-- Kern -->
+      <circle cx="120" cy="100" r="24" fill="#251520" stroke="var(--rose)" stroke-width="1.2" opacity=".8"/>
+      <text x="120" y="104" text-anchor="middle" fill="var(--rose)" font-family="Fraunces,serif" font-size="12" font-weight="600">B-cel</text>
+
+      <!-- CD20 receptor (links op rand) -->
+      <rect x="36" y="110" width="24" height="18" rx="5" fill="var(--rose)" stroke="#5a2540" stroke-width="1"/>
+      <line x1="60" y1="119" x2="50" y2="119" stroke="var(--rose)" stroke-width="2"/>
+      <text x="28" y="102" text-anchor="middle" fill="var(--rose)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">CD20</text>
+
+      <!-- CD38 receptor (rechts op rand) -->
+      <rect x="180" y="110" width="24" height="18" rx="5" fill="var(--pink)" stroke="#5a2540" stroke-width="1"/>
+      <line x1="180" y1="119" x2="190" y2="119" stroke="var(--pink)" stroke-width="2"/>
+      <text x="212" y="102" text-anchor="middle" fill="var(--pink)" font-family="DM Sans,sans-serif" font-size="11" font-weight="600">CD38</text>
+    </svg>
+    <div class="img-caption">B-cel met <strong style="color:var(--rose)">CD20</strong> en <strong style="color:var(--pink)">CD38</strong> aan het oppervlak en <strong style="color:var(--orange)">BTK</strong> binnenin</div>
+   </div>
+   <div class="card">
+    <p>De B-cel (witte bloedcel) speelt een rol bij <strong>reuma</strong> (auto-antistoffen) en bij <strong>B-cel tumoren</strong> (lymfoom, leukemie, myeloom).</p>
+    <p class="sep"><strong>CD20-remmers</strong> - bij reuma, non-Hodgkin lymfoom, chronische lymfatische leukemie:</p>
+    <div class="pills">
+      <span class="pill">rituximab (Truxima)</span><span class="pill">obinutuzumab (Gazyvaro)</span>
+      <span class="pill">ocrelizumab (Ocrevus)</span>
+    </div>
+    <p style="margin-top:7px"><strong>CD38-remmers</strong> - bij multipel myeloom:</p>
+    <div class="pills">
+      <span class="pill">daratumumab (Darzalex)</span><span class="pill">isatuximab (Sarclisa)</span>
+    </div>
+    <p style="margin-top:7px"><strong>BTK-remmers</strong> (-nib, binnenin B-cel) - bij chronische lymfatische leukemie, mantelcellymfoom:</p>
+    <div class="pills">
+      <span class="pill">ibrutinib (Imbruvica)</span><span class="pill">acalabrutinib (Calquence)</span>
+      <span class="pill">zanubrutinib (Brukinsa)</span>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="f" id="d-pd1" style="left:5620px;top:2400px;width:600px;height:580px">
+  <span class="tag" style="background:#201a35;color:var(--purple);border:1px solid #4a3a80">Immuunsysteem activeren</span>
+  <h2 style="color:var(--purple)">Checkpointremmers</h2>
+  <div style="margin-top:10px;width:100%;max-width:340px">
+    <img class="slide-img" src="assets/checkpoint-inhib-diagram.png" alt="PD-1/PD-L1 checkpoint inhibitor mechanisme" style="width:100%">
+    <div class="img-caption"><strong style="color:var(--purple)">PD-1/PD-L1</strong>-koppeling geblokkeerd -&gt; T-cel valt de tumor weer aan</div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <p>Tumorcellen kunnen de T-cel "uitzetten" door PD-L1 aan PD-1 te koppelen. Zo ontsnappen ze aan het immuunsysteem.</p>
+    <p><strong>Checkpointremmers</strong> blokkeren deze koppeling -> T-cel valt tumor weer aan.</p>
+    <div class="arr"><span>Checkpoint opgeheven</span><span class="a">-></span><span>T-cel actief</span><span class="a">-></span><span><strong>tumor aangevallen</strong></span></div>
+    <p class="sep">Bij longkanker, melanoom, niercelkanker, blaaskanker, hoofd-halstumoren en meer.</p>
+    <div class="pills">
+      <span class="pill">nivolumab (Opdivo)</span><span class="pill">pembrolizumab (Keytruda)</span>
+      <span class="pill">durvalumab (Imfinzi)</span>
+    </div>
+  </div>
+</div>
+
+<div class="f" id="d-recept" style="left:4090px;top:2950px;width:830px;height:540px">
+  <span class="tag" style="background:#102018;color:var(--green);border:1px solid #2a5a3a">Tumorgroei remmen</span>
+  <h2 style="color:var(--green)">Receptoren op de tumorcel</h2>
+  <div class="img-row" style="max-width:800px">
+   <div class="img-col-thumb" style="width:230px">
+    <div class="crop-her2">
+      <img src="assets/HER2-EGFR.jpg" alt="EGFR en HER2/HER3 receptoren op de celmembraan">
+    </div>
+    <div class="img-caption"><strong style="color:var(--green)">EGFR</strong> en <strong style="color:var(--green)">HER2/HER3</strong> receptoren in de celmembraan</div>
+   </div>
+   <div class="card">
+    <p>Tumorcellen hebben <strong>receptoren</strong> die groeisignalen ontvangen. Blokkeren = groei stopt.</p>
+    <p class="sep"><strong>HER2-remmers</strong> - bij HER2-positieve borstkanker, maagkanker:</p>
+    <div class="pills">
+      <span class="pill">trastuzumab (Herzuma)</span><span class="pill">pertuzumab (Perjeta)</span>
+      <span class="pill">trastuzumab emtansine (Kadcyla)</span>
+      <span class="pill">lapatinib (Tyverb) – nib</span><span class="pill">tucatinib (Tukysa) – nib</span>
+    </div>
+    <p style="margin-top:7px"><strong>EGFR-remmers</strong> - bij niet-kleincellig longcarcinoom, colorectaalkanker:</p>
+    <div class="pills">
+      <span class="pill">cetuximab (Erbitux)</span><span class="pill">panitumumab (Vectibix)</span>
+      <span class="pill">erlotinib – nib</span><span class="pill">osimertinib (Tagrisso) – nib</span>
+    </div>
+    <p style="margin-top:7px"><strong>VEGF-remmers</strong> - bij colorectaalkanker, longkanker, ovariumcarcinoom:</p>
+    <div class="pills">
+      <span class="pill">bevacizumab (Oyavas)</span><span class="pill">ramucirumab (Cyramza)</span>
+    </div>
+   </div>
+   <div class="img-col-thumb" style="width:170px">
+    <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:var(--bg3);border-radius:10px;border:1px solid var(--border);padding:6px">
+      <!-- Hoofd-bloedvat (verticaal) -->
+      <path d="M 70 10 Q 60 60 75 110 Q 90 160 70 210" stroke="var(--red)" stroke-width="22" fill="none" stroke-linecap="round" opacity=".55"/>
+      <path d="M 70 10 Q 60 60 75 110 Q 90 160 70 210" stroke="#7a1010" stroke-width="22" fill="none" stroke-linecap="round" opacity=".0"/>
+      <!-- Binnenkant lumen -->
+      <path d="M 70 10 Q 60 60 75 110 Q 90 160 70 210" stroke="#3d0a0a" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/>
+
+      <!-- Nieuwe vat-uitstulping (angiogenese) -->
+      <path d="M 80 90 Q 130 100 165 130 Q 175 145 168 165" stroke="var(--red)" stroke-width="11" fill="none" stroke-linecap="round" opacity=".55"/>
+      <path d="M 80 90 Q 130 100 165 130 Q 175 145 168 165" stroke="#3d0a0a" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+
+      <!-- VEGF-moleculen (groene stippen rond uitstulping) -->
+      <circle cx="115" cy="80" r="5" fill="var(--green)"/>
+      <circle cx="140" cy="115" r="5" fill="var(--green)"/>
+      <circle cx="158" cy="100" r="4.5" fill="var(--green)"/>
+      <circle cx="172" cy="155" r="5" fill="var(--green)"/>
+      <circle cx="155" cy="180" r="4.5" fill="var(--green)"/>
+
+      <!-- Pijl + label VEGF -->
+      <line x1="115" y1="55" x2="125" y2="75" stroke="var(--green)" stroke-width="1.3" opacity=".7"/>
+      <text x="113" y="48" text-anchor="middle" fill="var(--green)" font-family="DM Sans,sans-serif" font-size="12" font-weight="700">VEGF</text>
+
+      <!-- Label angiogenese -->
+      <text x="155" y="208" text-anchor="middle" fill="var(--text)" font-family="DM Sans,sans-serif" font-size="9" font-style="italic">nieuw bloedvat</text>
+    </svg>
+    <div class="img-caption">Tumor scheidt <strong style="color:var(--green)">VEGF</strong> af en stimuleert zo de groei van nieuwe bloedvaten (<em>angiogenese</em>)</div>
+   </div>
+  </div>
+</div>
+
+<div class="f" id="d-inside" style="left:4940px;top:2990px;width:900px;height:580px">
+  <span class="tag" style="background:#2a1e10;color:var(--orange);border:1px solid #5a3e20">Binnenin de tumorcel</span>
+  <h2 style="color:var(--orange)">Kinasen, DNA &amp; proteasoom</h2>
+  <div class="img-row" style="max-width:860px;align-items:center;justify-content:center">
+   <div class="img-col-thumb" style="width:260px">
+    <img class="slide-img" src="assets/Kinase-PARP.png" alt="Targets binnenin de tumorcel: BCR/ABL, mTOR, CDK, PARP en proteasoom" style="width:100%;padding:10px">
+    <div class="img-caption">Targets binnenin de tumorcel: <strong style="color:var(--orange)">BCR/ABL</strong>, <strong style="color:var(--orange)">mTOR</strong>, <strong style="color:var(--orange)">CDK</strong>, <strong style="color:var(--lime)">PARP</strong> en het <strong style="color:var(--red)">proteasoom</strong></div>
+   </div>
+   <div class="card" style="flex:0 1 540px">
+    <p>Sommige middelen gaan <strong>de tumorcel in</strong> en blokkeren processen die nodig zijn voor groei en overleving.</p>
+    <p class="sep"><strong>BCR-ABL remmers</strong> - bij chronische myeloïde leukemie (CML):</p>
+    <div class="pills"><span class="pill">imatinib</span><span class="pill">dasatinib</span><span class="pill">nilotinib</span><span class="pill">bosutinib (Bosulif)</span></div>
+    <p style="margin-top:6px"><strong>CDK / mTOR remmers</strong> - bij borstkanker, niercelkanker:</p>
+    <div class="pills"><span class="pill">palbociclib (Ibrance)</span><span class="pill">everolimus (Afinitor)</span></div>
+    <p style="margin-top:6px"><strong>PARP-remmers</strong> - bij ovariumcarcinoom, BRCA+ borstkanker:</p>
+    <div class="pills"><span class="pill">olaparib (Lynparza)</span><span class="pill">niraparib (Zejula)</span></div>
+    <p style="margin-top:6px"><strong>Proteasoomremmers</strong> - bij multipel myeloom:</p>
+    <div class="pills"><span class="pill">bortezomib</span><span class="pill">carfilzomib (Kyprolis)</span><span class="pill">ixazomib (Ninlaro)</span></div>
+   </div>
+  </div>
+</div>
+
+<div class="f" id="d-rest" style="left:4380px;top:3820px;width:840px;height:520px">
+  <span class="tag" style="background:#201a35;color:var(--purple);border:1px solid #4a3a80">Overige gerichte middelen</span>
+  <h2>Overige middelen</h2>
+  <div class="img-row" style="max-width:800px">
+   <div class="card">
+    <p><strong>Antilichaam-drug conjugaten (ADC):</strong> antilichaam + gifstof -> gericht afgeleverd bij tumorcel.</p>
+    <div class="pills"><span class="pill">brentuximab vedotin (Adcetris)</span><span class="pill">sacituzumab govitecan (Trodelvy)</span></div>
+    <p class="sep"><strong>Overige gerichte middelen:</strong></p>
+    <p>venetoclax (Venclyxto) - bij chronische lymfatische leukemie</p>
+    <p>enzalutamide (Xtandi) - bij gemetastaseerd prostaatcarcinoom</p>
+    <p>lenalidomide / pomalidomide - bij multipel myeloom</p>
+    <p>vedolizumab (Entyvio) - bij colitis ulcerosa, ziekte van Crohn</p>
+   </div>
+   <div class="img-col-thumb" style="width:240px">
+    <img class="slide-img" src="assets/ADC.jpeg" alt="Antibody Drug Conjugate met linker en toxine" style="width:100%;padding:10px">
+    <div class="img-caption"><strong>ADC</strong>: antilichaam met linker en toxine, gericht afgeleverd bij de tumorcel</div>
+   </div>
+  </div>
+</div>
+
+<div class="f" id="s-sum" style="left:4040px;top:4420px;width:1140px;height:520px">
+  <span class="tag" style="background:#1a2e30;color:var(--teal);border:1px solid #2a5e50">Afsluiting</span>
+  <h2>Samenvatting</h2>
+  <div class="img-row" style="max-width:1100px;align-items:center">
+   <div class="card" style="max-width:760px">
+    <p style="text-align:center;margin-bottom:8px;color:var(--bright);font-size:.9rem">
+      <strong>-mab</strong> = antilichaam (injectie) &nbsp;|&nbsp; <strong>-nib</strong> = kinaseremmer (tablet)
+    </p>
+    <table class="stbl">
+      <thead><tr><th>Aanpak</th><th>Wat doet het?</th><th>Ziektebeeld</th><th>Voorbeeld</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--teal)">Signaalstoffen remmen</td><td>Minder ontsteking</td><td>Reuma</td><td>adalimumab (Humira)</td></tr>
+        <tr><td style="color:var(--amber)">T-cel van binnenuit</td><td>Signaal ontsteking minder</td><td>Reuma</td><td>baricitinib (Olumiant)</td></tr>
+        <tr><td style="color:var(--rose)">B-cel uitschakelen</td><td>Immuuncel geremd</td><td>Reuma of lymfoom</td><td>rituximab (Truxima)</td></tr>
+        <tr><td style="color:var(--purple)">Checkpoint opheffen</td><td>T-cel valt tumor aan</td><td>Longkanker</td><td>pembrolizumab (Keytruda)</td></tr>
+        <tr><td style="color:var(--green)">Tumorreceptor blokkeren</td><td>Groei-signaal stopt</td><td>Borstkanker</td><td>trastuzumab (Herzuma)</td></tr>
+        <tr><td style="color:var(--orange)">Tumorcel van binnenuit</td><td>Deling / reparatie stopt</td><td>CML of borstkanker</td><td>palbociclib (Ibrance)</td></tr>
+      </tbody>
+    </table>
+    <p style="text-align:center;margin-top:12px;color:var(--teal);font-size:.86rem">
+      Biologicals en targeted therapie werken gericht - met minder bijwerkingen.
+    </p>
+   </div>
+   <div class="img-col-thumb" style="width:280px">
+    <img class="slide-img" src="assets/tumor-targeted-therapy.png" alt="Targeted therapy: drie patiënten met verschillende tumortargets" style="width:100%">
+    <div class="img-caption">Targeted therapy: per patiënt het juiste middel voor het juiste tumortarget</div>
+   </div>
+  </div>
+</div>
+
+</div></div>
+
+<nav id="bar">
+  <button id="bp" onclick="go(-1)">&#8249;</button>
+  <div class="dots" id="dots"></div>
+  <span id="lbl"></span>
+  <button id="bn" onclick="go(1)">&#8250;</button>
+</nav>
+
+<script>
+const CELL_CX = 4850, CELL_CY = 2315;
+
+const CELL_FIT = { padX:60, padY:40, maxZ:1.35 };
+
+const S = [
+  { id:'s-intro',  cx:700,   cy:580,  l:'Introductie' },
+  { id:'s-ra',     cx:1710,  cy:565,  l:'Reumatoïde Artritis' },
+  { id:'s-onco',   cx:2610,  cy:520,  l:'Oncologie: vroeger vs. nu' },
+  { id:'s-types',  cx:3510,  cy:565,  l:'Twee soorten middelen' },
+
+  { id:'cell-frame', cx:CELL_CX, cy:CELL_CY, fit:CELL_FIT, l:'Cel-overzicht' },
+
+  { id:'d-cyto',    cx:3780,  cy:2105, l:'Signaalstoffen remmen' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-tcel',    cx:3780,  cy:2710, l:'T-cel van binnenuit' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-bcel',    cx:6040,  cy:2080, l:'B-cel uitschakelen' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-pd1',     cx:5920,  cy:2700, l:'Checkpointremmers' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-recept',  cx:4505,  cy:3220, l:'Tumorreceptoren blokkeren' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-inside',  cx:5390,  cy:3280, l:'Binnenin de tumorcel' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'d-rest',    cx:4800,  cy:4080, l:'Overige middelen' },
+  { id:'cell-frame',cx:CELL_CX,cy:CELL_CY, fit:CELL_FIT, l:'Overzicht' },
+
+  { id:'s-sum',     cx:4610,  cy:4680, l:'Samenvatting' },
+];
+
+function fitZoom(el, { maxZ = 1.8, padX = 80, padY = 80 } = {}) {
+  const vw = vp.clientWidth, vh = vp.clientHeight;
+  const w = el.offsetWidth, h = el.offsetHeight;
+  return Math.min((vw - padX) / w, (vh - padY) / h, maxZ);
+}
+
+let cur = 0, busy = false;
+const world = document.getElementById('world');
+const vp = document.getElementById('viewport');
+
+S.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'd';
+  d.onclick = () => goTo(i);
+  document.getElementById('dots').appendChild(d);
+});
+
+function goTo(i) {
+  if (i<0 || i>=S.length) return;
+  cur = i; busy = true;
+  const s = S[i];
+  const vw = vp.clientWidth, vh = vp.clientHeight;
+  const el = document.getElementById(s.id);
+  const z = fitZoom(el, s.fit);
+  const tx = vw/2 - s.cx * z;
+  const ty = vh/2 - s.cy * z;
+  world.style.transition = 'transform 1.1s cubic-bezier(.25,.1,.25,1)';
+  world.style.transform = `translate(${tx}px,${ty}px) scale(${z})`;
+  setTimeout(() => busy = false, 1150);
+  document.getElementById('lbl').textContent = `${i+1}/${S.length}  ${s.l}`;
+  document.querySelectorAll('.d').forEach((d,j) => d.classList.toggle('on', j===i));
+  document.querySelectorAll('.f').forEach(el => el.classList.remove('act'));
+  if (el && el.classList.contains('f')) el.classList.add('act');
+  document.getElementById('bp').disabled = i===0;
+  document.getElementById('bn').disabled = i===S.length-1;
+}
+function go(d) { if (!busy) goTo(cur+d) }
+
+document.addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); go(1) }
+  if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); go(-1) }
+});
+let wt = false;
+document.addEventListener('wheel', e => {
+  if (wt) return; wt = true; setTimeout(() => wt = false, 600);
+  if (e.deltaY > 10) go(1); else if (e.deltaY < -10) go(-1);
+}, { passive: true });
+let t0x = 0, t0y = 0;
+document.addEventListener('touchstart', e => { t0x = e.touches[0].clientX; t0y = e.touches[0].clientY });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - t0x, dy = e.changedTouches[0].clientY - t0y;
+  if (Math.abs(dx) > Math.abs(dy)) { if (dx < -30) go(1); else if (dx > 30) go(-1) }
+  else { if (dy < -30) go(1); else if (dy > 30) go(-1) }
+});
+
+window.addEventListener('resize', () => goTo(cur));
+
+goTo(0);
+</script>
+</body>
+</html>
